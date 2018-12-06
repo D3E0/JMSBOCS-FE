@@ -2,21 +2,30 @@
     <div id="app">
         <el-container>
             <el-aside width="200px">
-                <user-side v-bind:uid="uid" v-bind:is-tch="isTch"></user-side>
+                <el-menu default-active="1" class="el-menu-vertical-demo">
+                    <el-menu-item index="1">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">系统通知</span>
+                    </el-menu-item>
+                    <el-menu-item index="2" :disabled="false">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">朋友私信</span>
+                    </el-menu-item>
+                </el-menu>
             </el-aside>
             <el-main>
-                <router-view></router-view>
+                <notify></notify>
             </el-main>
         </el-container>
     </div>
 </template>
 <script>
-    import userSide from "./components/userSide.vue";
+    import notify from "./components/notify.vue";
 
     export default {
         name: "app",
         components: {
-            userSide
+            notify
         },
         data() {
             return {
@@ -31,7 +40,6 @@
         font-family: 'Avenir', Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        text-align: center;
         color: #2c3e50;
         margin-top: 60px;
     }

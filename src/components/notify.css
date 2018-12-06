@@ -1,0 +1,36 @@
+p {
+    line-height: 24px;
+    margin: 0;
+    padding: 0;
+}
+
+.read {
+    font-weight: unset;
+    color: gray;
+}
+
+.mt10 {
+    margin-top: 10px;
+}
+
+.font-s14 {
+    font-size: 14px !important;
+}
+
+.fl {
+    float: left;
+}
+
+.newsS {
+    width: 38px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+
+.msg-time {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 12px;
+}

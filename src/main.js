@@ -12,5 +12,6 @@ new Vue({
     data: {
         uid: 2,
         isTch: true,
+        courseId: 2
     }
 }).$mount('#app');

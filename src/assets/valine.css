@@ -1,5 +1,4 @@
 .vcard {
-    padding-top: 1.5rem;
     position: relative;
     display: block;
 }
@@ -57,13 +56,6 @@
     margin-right: 14px;
 }
 
-.vat {
-    font-size: .8125rem;
-    color: #ef2f11;
-    cursor: pointer;
-    float: right;
-}
-
 .vcontent {
     word-wrap: break-word;
     word-break: break-all;
@@ -80,5 +72,17 @@
     color: #666;
     margin-top: 1rem;
     padding-left: 1rem;
-    border-left: 1px dashed hsla(0, 0%, 93%, .5);
+    border-left: 1px dashed hsla(0, 0%, 93%, .5)
 }
+
+.vquote .vimg {
+    width: 2.225rem;
+    height: 2.225rem
+}
+
+.vat {
+    float: right;
+    color: #ef2f11
+}
+
+

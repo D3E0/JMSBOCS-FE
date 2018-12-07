@@ -10,7 +10,7 @@ new Vue({
     router,
     render: h => h(App),
     data: {
-        uid: 1,
+        uid: 2,
         isTch: true,
     }
 }).$mount('#app');

@@ -2,19 +2,20 @@
     <div id="app">
         <el-container>
             <el-aside width="200px">
-                <el-menu default-active="1" class="el-menu-vertical-demo">
-                    <el-menu-item index="1">
+                <el-menu default-active="comment" class="el-menu-vertical-demo"
+                         @select="onSelect" :router="true">
+                    <el-menu-item index="notify">
                         <i class="el-icon-menu"></i>
                         <span slot="title">系统通知</span>
                     </el-menu-item>
-                    <el-menu-item index="2" :disabled="false">
+                    <el-menu-item index="comment" :disabled="false">
                         <i class="el-icon-menu"></i>
-                        <span slot="title">朋友私信</span>
+                        <span slot="title">评论</span>
                     </el-menu-item>
                 </el-menu>
             </el-aside>
             <el-main>
-                <notify></notify>
+                <router-view></router-view>
             </el-main>
         </el-container>
     </div>
@@ -31,6 +32,11 @@
             return {
                 uid: this.$root.uid,
                 isTch: this.$root.isTch,
+            }
+        },
+        methods: {
+            onSelect(index, indexPath) {
+                console.info(index, indexPath);
             }
         }
     };

@@ -21,12 +21,11 @@ p {
     float: left;
 }
 
-.newsS {
-    width: 38px;
-    vertical-align: middle;
-    text-align: center;
-}
-
+/*.newsS {*/
+    /*width: 38px;*/
+    /*vertical-align: middle;*/
+    /*text-align: center;*/
+/*}*/
 
 .msg-time {
     position: absolute;

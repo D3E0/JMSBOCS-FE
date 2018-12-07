@@ -8,6 +8,10 @@ export default new Router({
     base: process.env.BASE_URL,
     routes: [
         {
+            path: '/',
+            redirect: '/comment'
+        },
+        {
             path: '/stuProfile',
             component: () => import('./components/stuProfile.vue')
         },
@@ -22,6 +26,14 @@ export default new Router({
         {
             path: '/qiniu',
             component: () => import( './components/qiniu.vue')
+        },
+        {
+            path: '/notify',
+            component: () => import( './components/notify.vue')
+        },
+        {
+            path: '/comment',
+            component: () => import( './components/comment.vue')
         }
     ]
 })

@@ -4,11 +4,11 @@
         <div class="vh">
             <div class="vhead">
                 <span class="vnick">{{reply.username}}</span>
-                <span class="vsys">Chrome 69.0.3497.81</span>
-                <span class="vsys">Windows 10.0</span>
+                <span class="vsys">{{ua.browser + " " + ua.version}}</span>
+                <span class="vsys">{{ua.os + " " + ua.osVersion}}</span>
             </div>
             <div class="vmeta">
-                <span class="vtime">{{reply.commentTime}}</span>
+                <span class="vtime">{{cTimeAgo}}</span>
                 <el-button type="text" class="vat"
                            @click="$emit('onSubReply', {
                                             pid:reply.commentId,
@@ -16,12 +16,20 @@
                                         })">回复
                 </el-button>
             </div>
-            <div class="vcontent">{{reply.commentContent}}{{reply.commentId}}</div>
+            <div class="vcontent">
+                <p>
+                    <el-button type="text" style="color: #555">@{{reply.replyUsername}}
+                    </el-button>
+                </p>
+                {{reply.commentContent}}
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+    import {timeAgo, detectFactory} from '../assets/util.js'
+
     export default {
         name: "commentReplyItem",
         props: {
@@ -35,9 +43,16 @@
                 rootCommentId: '',
                 replyUserId: '',
                 replyUsername: '',
+                userAgent: '',
             }
         }
-        , computed: {}
+        , computed: {
+            cTimeAgo: function () {
+                return timeAgo(this.reply.commentTime)
+            }, ua: function () {
+                return detectFactory(this.reply.userAgent);
+            }
+        },
     }
 </script>
 

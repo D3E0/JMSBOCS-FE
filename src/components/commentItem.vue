@@ -4,11 +4,11 @@
         <div class="vh">
             <div class="vhead">
                 <span class="vnick">{{comment.username}}</span>
-                <span class="vsys">Chrome 69.0.3497.81</span>
-                <span class="vsys">Windows 10.0</span>
+                <span class="vsys">{{ua.browser + " " + ua.version}}</span>
+                <span class="vsys">{{ua.os + " " + ua.osVersion}}</span>
             </div>
             <div class="vmeta">
-                <span class="vtime">{{comment.commentTime}}</span>
+                <span class="vtime"> {{cTimeAgo}}</span>
                 <el-button type="text" class="vat"
                            @click="$emit('onReply', {
                                             pid:comment.commentId,
@@ -17,7 +17,9 @@
                                         })">回复
                 </el-button>
             </div>
-            <div class="vcontent">{{comment.commentContent}}{{comment.commentId}}</div>
+            <div class="vcontent">
+                {{comment.commentContent}}
+            </div>
             <div class="vquote">
                 <comment-reply-item v-for="item in comment.replyComments"
                                     :key="item.commentId"
@@ -31,6 +33,7 @@
 
 <script>
     import commentReplyItem from './commentReplyItem.vue'
+    import {timeAgo, detectFactory} from '../assets/util.js'
 
     export default {
         name: "commentItem",
@@ -46,9 +49,17 @@
                 userId: '',
                 username: '',
                 replyComments: '',
+                userAgent: '',
             }
         }
-        , computed: {},
+        , computed: {
+            cTimeAgo: function () {
+                return timeAgo(this.comment.commentTime)
+            },
+            ua: function () {
+                return detectFactory(this.comment.userAgent);
+            }
+        },
         methods: {
             listenSubReply(obj) {
                 obj.rid = this.comment.commentId;

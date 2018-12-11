@@ -9,7 +9,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: '/comment'
+            redirect: '/subject'
         },
         {
             path: '/stuProfile',
@@ -32,8 +32,52 @@ export default new Router({
             component: () => import( './components/notify.vue')
         },
         {
-            path: '/comment',
-            component: () => import( './components/comment.vue')
+            path: '/subject',
+            component: () => import( './components/Subject.vue'),
+            children: [
+                {
+                    path: '',
+                    redirect: "list"
+                },
+                {
+                    path: 'list',
+                    component: () => import( './components/SubjectList.vue')
+                },
+                {
+                    path: 'create',
+                    component: () => import( './components/SubjectCreate.vue')
+                },
+                {
+                    path: 'manage',
+                    component: () => import( './components/SubjectManage.vue')
+                },
+            ]
+        },
+        {
+            path: '/course',
+            component: () => import( './components/Course.vue'),
+            children: [
+                {
+                    path: '',
+                    redirect: "announcement"
+                },
+                {
+                    path: 'comment',
+                    component: () => import( './components/comment.vue')
+                },
+                {
+                    path: 'announcement',
+                    component: () => import( './components/Announcement.vue')
+                },
+                {
+                    path: 'resource',
+                    component: () => import( './components/Resource.vue')
+                },
+                {
+                    path: 'userhome',
+                    component: () => import( './components/UserHome.vue')
+                },
+            ]
         }
     ]
 })

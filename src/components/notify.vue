@@ -7,10 +7,10 @@
             </el-table-column>
             <el-table-column>
                 <template slot="header" slot-scope="scope">
-                    <el-button size="small" @click="onDelete()" :disabled="multipleSelection.length === 0">
+                    <el-button size="small" @click="onDelete" :disabled="multipleSelection.length === 0">
                         删除选中消息
                     </el-button>
-                    <el-button size="small" @click="clearSelection()" :disabled="multipleSelection.length === 0">
+                    <el-button size="small" @click="clearSelection" :disabled="multipleSelection.length === 0">
                         取消选择
                     </el-button>
                 </template>

@@ -1,0 +1,22 @@
+body{
+    font-size: 16px;
+    text-align: center;
+    color: #495060;
+    border-bottom: 1px solid hsla(0,0%,73%,.5);
+}
+.list li{
+    margin-top: 10px;
+    list-style: none;
+    padding: 0 1%;
+    color: #495060;
+}
+.li_item{
+    display: inline-block;
+    border-bottom: 1px solid hsla(0,0%,73%,.5);
+}
+.name{
+    margin: 1% 0;
+    font-weight: 600;
+    color: #495060;
+    font-size: 20px;
+}

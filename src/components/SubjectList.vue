@@ -1,16 +1,20 @@
 <template>
     <div>
         <el-row>
-            <el-col :span="24" class="panel-title">已选课程</el-col>
+            <el-col :span="24" class="panel-title" v-if="isTch">已开课程</el-col>
+            <el-col :span="24" class="panel-title" v-if="!isTch">已选课程</el-col>
         </el-row>
         <el-table :data="tableData" style="width: 100%"
                   :show-header="false" v-loading="loading">
-            <el-table-column>
+            <el-table-column min-width="180px">
                 <template slot-scope="scope">
                     <img src="../assets/class.png" height="60px" alt="课程图片">
                     <div class="item">
                         <div class="title">
-                            <el-button type="text" style="font-size: 18px" @click="f">
+                            <!--<router-link :to="'/course/' + scope.row.courseId">-->
+                            <!--{{scope.row.courseName}}-->
+                            <!--</router-link>-->
+                            <el-button type="text" style="font-size: 18px" @click="f(scope.$index,scope.row)">
                                 {{scope.row.courseName}}
                             </el-button>
                         </div>
@@ -28,13 +32,13 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column>
+            <el-table-column align="right">
                 <template slot-scope="scope">
                     <div style="float: right">
                         <el-tag type="success" class="mr10">进行中</el-tag>
-                        <el-button size="mini" type="danger"
-                                   @click="onDelete(scope.$index)">删除
-                        </el-button>
+                        <!--<el-button size="mini" type="danger"-->
+                        <!--@click="onEdit(scope.$index)">编辑-->
+                        <!--</el-button>-->
                     </div>
                 </template>
             </el-table-column>
@@ -60,7 +64,9 @@
                     console.info("bug");
                 }
                 return this.list.slice(offset, end);
-            },
+            }, isTch() {
+                return this.$root.isTch;
+            }
         },
         data() {
             return {
@@ -68,16 +74,22 @@
                 list: [],
                 count: '',
                 page: 1,
-                courseIndex: 0
+                courseIndex: 0,
             }
         },
         created() {
             this.fetchData();
         },
         methods: {
-            f() {
-                console.info("sdsad");
-            }, onDelete(x) {
+            f(x, y) {
+                let routeData = this.$router.resolve({
+                    name: 'course',
+                    params: {
+                        cid: y.courseId,
+                    }
+                });
+                window.open(routeData.href, '_blank');
+            }, onEdit(x) {
                 this.courseIndex = x;
                 this.openMsgBox();
             }, handleDelete() {
@@ -132,8 +144,7 @@
                 }).finally(() => {
                     this.loading = false;
                 });
-            }
-            ,
+            },
         }
 
     }

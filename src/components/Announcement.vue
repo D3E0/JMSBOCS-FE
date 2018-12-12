@@ -49,6 +49,7 @@
 <script>
     export default {
         name: "Announcement",
+        props:['courseId'],
         data() {
             return {
                 tableData: [{

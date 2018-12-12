@@ -6,7 +6,7 @@
             </el-header>
             <el-container>
                 <el-aside width="200px">
-                    <course-side></course-side>
+                    <course-side :cid="cid"></course-side>
                 </el-aside>
                 <el-main>
                     <router-view></router-view>
@@ -21,8 +21,12 @@
 
     export default {
         name: "Course",
+        props: ['cid'],
         components: {
             CourseSide
+        }, created() {
+            console.info(this.$route);
+            console.info(this.$route.params.cid);
         }
     }
 </script>

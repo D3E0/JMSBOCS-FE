@@ -54,7 +54,8 @@ export default new Router({
             ]
         },
         {
-            path: '/course',
+            path: '/course/:cid',
+            name: "course",
             component: () => import( './components/Course.vue'),
             children: [
                 {
@@ -63,18 +64,22 @@ export default new Router({
                 },
                 {
                     path: 'comment',
+                    props: true,
                     component: () => import( './components/comment.vue')
                 },
                 {
                     path: 'announcement',
+                    props: true,
                     component: () => import( './components/Announcement.vue')
                 },
                 {
                     path: 'resource',
+                    props: true,
                     component: () => import( './components/Resource.vue')
                 },
                 {
                     path: 'userhome',
+                    props: true,
                     component: () => import( './components/UserHome.vue')
                 },
             ]

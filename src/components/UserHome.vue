@@ -12,6 +12,7 @@
 <script>
     export default {
         name: "UserHome",
+        props:['courseId'],
         data() {
             return {}
         }

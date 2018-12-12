@@ -45,6 +45,7 @@
 <script>
     export default {
         name: "Resource",
+        props:['courseId'],
         data() {
             return {
                 tableData: [{

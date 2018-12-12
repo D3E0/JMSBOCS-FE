@@ -1,6 +1,12 @@
 <template>
     <div id="app">
         <el-container>
+            <!--<el-main>-->
+            <!--<router-view></router-view>-->
+            <!--</el-main>-->
+            <el-aside width="200px">
+                <course-side></course-side>
+            </el-aside>
             <el-main>
                 <router-view></router-view>
             </el-main>
@@ -8,10 +14,12 @@
     </div>
 </template>
 <script>
+    import CourseSide from './components/CourseSide.vue'
 
     export default {
+
         name: "app",
-        components: {},
+        components: {CourseSide},
         data() {
             return {
                 uid: this.$root.uid,

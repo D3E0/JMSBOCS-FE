@@ -21,12 +21,10 @@
 
     export default {
         name: "Course",
-        props: ['cid'],
+        props: ['cid', 'userId'],
         components: {
             CourseSide
         }, created() {
-            console.info(this.$route);
-            console.info(this.$route.params.cid);
         }
     }
 </script>

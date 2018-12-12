@@ -82,13 +82,16 @@
         },
         methods: {
             f(x, y) {
-                let routeData = this.$router.resolve({
-                    name: 'course',
-                    params: {
-                        cid: y.courseId,
-                    }
-                });
-                window.open(routeData.href, '_blank');
+                this.$router.push({
+                    path: '/course/' + y.courseId,
+                })
+                // let routeData = this.$router.resolve({
+                //     name: 'course',
+                //     params: {
+                //         cid: y.courseId,
+                //     }
+                // });
+                // window.open(routeData.href, '_blank');
             }, onEdit(x) {
                 this.courseIndex = x;
                 this.openMsgBox();

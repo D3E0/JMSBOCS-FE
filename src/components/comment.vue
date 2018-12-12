@@ -1,5 +1,5 @@
 <template>
-    <div :v-loading="loading">
+    <div v-loading="loading">
         <div class="vwrap">
             <el-input type="textarea" :rows="7"
                       ref="test"

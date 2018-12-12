@@ -3,7 +3,8 @@
         <el-table :data="tableData" style="width: 100%" :show-header="true">
             <el-table-column>
                 <template slot="header" slot-scope="scope">
-                    <el-button type="primary" size="medium" plain @click="onUpload">
+                    <el-button type="primary" size="medium" plain
+                               @click="onUpload" v-if="isTch">
                         上传资源
                     </el-button>
                 </template>
@@ -32,7 +33,7 @@
                         <el-button size="small" type="primary"
                                    @click="handleDownload(scope.$index, scope.row)">下载
                         </el-button>
-                        <el-button size="small" type="danger"
+                        <el-button size="small" type="danger" v-if="isTch"
                                    @click="handleDelete(scope.$index, scope.row)">删除
                         </el-button>
                     </div>
@@ -44,10 +45,11 @@
 
 <script>
     export default {
-        name: "Resource",
-        props:['courseId'],
+        name: "CourseResource",
+        props: ['courseId'],
         data() {
             return {
+                isTch: this.$root.isTch,
                 tableData: [{
                     courseName: '4原.jpg',
                     academicYear: '2016',

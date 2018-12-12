@@ -1,5 +1,6 @@
 <template>
-    <el-form ref="subjectForm" :model="subject" label-width="90px" style="width: 500px">
+    <el-form ref="subjectForm" :model="subject" v-loading="loading"
+             label-width="90px" style="width: 500px">
         <el-form-item label="课程名称" prop="name">
             <el-input v-model="subject.name" type="text"></el-input>
         </el-form-item>
@@ -30,6 +31,7 @@
         name: "SubjectCreate",
         data() {
             return {
+                loading: false,
                 subject: {
                     academic: '2018',
                     semester: '1',
@@ -44,6 +46,7 @@
                     this.$message.error("请先填写课程名称和描述");
                     return;
                 }
+                this.loading = true;
                 const params = new URLSearchParams();
                 params.append('id', this.$root.uid);
                 params.append('name', this.subject.name);
@@ -61,6 +64,8 @@
                     }
                 }).catch(error => {
                     this.$message.error(error);
+                }).finally(() => {
+                    this.loading = false;
                 });
             }, resetForm(formName) {
                 this.$refs[formName].resetFields();

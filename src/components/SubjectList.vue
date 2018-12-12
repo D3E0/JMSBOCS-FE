@@ -1,11 +1,10 @@
 <template>
     <div>
         <el-row>
-            <el-col :span="24" class="panel-title">
-                已选课程
-            </el-col>
+            <el-col :span="24" class="panel-title">已选课程</el-col>
         </el-row>
-        <el-table :data="tableData" style="width: 100%" :show-header="false">
+        <el-table :data="tableData" style="width: 100%"
+                  :show-header="false" v-loading="loading">
             <el-table-column>
                 <template slot-scope="scope">
                     <img src="../assets/class.png" height="60px" alt="课程图片">
@@ -34,54 +33,112 @@
                     <div style="float: right">
                         <el-tag type="success" class="mr10">进行中</el-tag>
                         <el-button size="mini" type="danger"
-                                   @click="handleDelete(scope.$index, scope.row)">删除
+                                   @click="onDelete(scope.$index)">删除
                         </el-button>
                     </div>
                 </template>
             </el-table-column>
         </el-table>
+        <div style="margin-top: 10px;margin-left: 13px">
+            <el-pagination layout="total, prev, pager, next"
+                           :current-page.sync="page"
+                           :total.sync="list.length">
+            </el-pagination>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
         name: "SubjectList",
+        computed: {
+            tableData() {
+                let offset = (this.page - 1) * 10;
+                let end = Math.min(this.list.length, offset + 10);
+                console.info("change " + offset + " " + end + " " + this.page);
+                if (offset === end) {
+                    console.info("bug");
+                }
+                return this.list.slice(offset, end);
+            },
+        },
         data() {
             return {
-                tableData: [{
-                    courseName: 'Java',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }, {
-                    courseName: 'C++',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }, {
-                    courseName: 'PHP',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }, {
-                    courseName: 'Python',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }]
+                loading: true,
+                list: [],
+                count: '',
+                page: 1,
+                courseIndex: 0
             }
-        }, methods: {
+        },
+        created() {
+            this.fetchData();
+        },
+        methods: {
             f() {
                 console.info("sdsad");
+            }, onDelete(x) {
+                this.courseIndex = x;
+                this.openMsgBox();
+            }, handleDelete() {
+                this.loading = true;
+                this.axios.delete('/api/subject', {
+                    params: {
+                        userId: this.$root.uid,
+                        courseId: this.courseIndex,
+                    }
+                }).then(response => {
+                    if (response.data.message === 'success') {
+                        this.$message({
+                            message: '删除成功',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message.error("提交失败");
+                    }
+                    this.list.splice(this.courseIndex, 1);
+                }).catch(error => {
+                    this.$message.error(error);
+                }).finally(() => {
+                    this.loading = false;
+                });
+            }, openMsgBox() {
+                this.$confirm('确定删除本门课程?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    console.info("confirm");
+                    this.handleDelete();
+                }).catch(error => {
+                    console.info(error);
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
+                });
+            },
+            fetchData() {
+                this.loading = true;
+                this.axios.get('/api/subjectList', {
+                    params: {
+                        userId: this.$root.uid,
+                    }
+                }).then(response => {
+                    this.list = response.data.data;
+                    this.count = response.data.count;
+                }).catch(error => {
+                    this.$message.error(error);
+                }).finally(() => {
+                    this.loading = false;
+                });
             }
+            ,
         }
 
     }
 </script>
 
 <style scoped>
-
     @import "../assets/course.css";
-
-
 </style>

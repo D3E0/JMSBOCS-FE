@@ -5,15 +5,14 @@
                 <span class="formLabel">课程</span>
                 <el-select v-model="subject.id" placeholder="请先选择课程" size="small"
                            @change="fetchStudentData">
-                    <el-option v-for="item in options"
-                               :key="item.id"
-                               :label="item.name"
-                               :value="item.id">
+                    <el-option v-for="item in options" :key="item.id"
+                               :label="item.name" :value="item.id">
                     </el-option>
                 </el-select>
             </el-col>
             <el-col :span="10">
                 <el-upload action="" :on-change="handleChange"
+                           ref="fileUpload"
                            :auto-upload="false" :limit="1"
                            :on-exceed="handleExceed"
                            :disabled="subject.id === ''"
@@ -34,27 +33,25 @@
                 取消选择
             </el-button>
             <el-button size="small" type="info" @click="onReset">重 置</el-button>
-            <el-button size="small" type="primary" @click="onSubmit">提交修改</el-button>
+            <el-button size="small" type="primary" @click="onSubmit"
+                       :disabled="this.subject.id === ''">提交修改
+            </el-button>
         </div>
 
         <el-table ref="multipleTable"
                   :data="tableData"
                   tooltip-effect="dark"
                   style="width: 100%"
-                  :v-loading="loading"
+                  v-loading="loading"
                   @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55">
-            </el-table-column>
-            <el-table-column prop="id" label="学号">
-            </el-table-column>
-            <el-table-column prop="name" label="姓名">
-            </el-table-column>
-            <el-table-column prop="major" label="专业班级">
-            </el-table-column>
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column prop="id" label="学号"></el-table-column>
+            <el-table-column prop="name" label="姓名"></el-table-column>
+            <el-table-column prop="major" label="专业班级"></el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button size="mini" type="danger"
-                               @click="OnSingleDelete(scope.$index, scope.row)">删除
+                               @click="onSingleDelete(scope.$index)">删除
                     </el-button>
                 </template>
             </el-table-column>
@@ -68,11 +65,18 @@
         </div>
 
         <el-dialog title="要导入的学生名单" :visible.sync="dialogTableVisible">
-            <el-table :data="excelData">
+            <el-table :data="excelTableData">
                 <el-table-column property="id" label="学号"></el-table-column>
                 <el-table-column property="name" label="姓名"></el-table-column>
                 <el-table-column property="major" label="专业班级"></el-table-column>
             </el-table>
+            <div style="margin-top: 10px;margin-left: 13px">
+                <el-pagination ref="pagination2"
+                               layout="total, prev, pager, next"
+                               :current-page.sync="excelPage"
+                               :total="excelData.length">
+                </el-pagination>
+            </div>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="onCancel">取 消</el-button>
                 <el-button type="primary" @click="onConfirm">确 定</el-button>
@@ -95,6 +99,15 @@
                     console.info("bug");
                 }
                 return this.list.slice(offset, end);
+            },
+            excelTableData() {
+                let offset = (this.excelPage - 1) * 8;
+                let end = Math.min(this.excelData.length, offset + 8);
+                console.info("change " + offset + " " + end + " " + this.excelPage);
+                if (offset === end) {
+                    console.info("bug");
+                }
+                return this.excelData.slice(offset, end);
             }
         }, created() {
             this.fetchData()
@@ -106,7 +119,8 @@
                 multipleSelection: [],
                 subject: {id: '', name: ''},
                 page: 1,
-                list: [{"id": 1160299001, "name": "张三", "major": "软工161"}],
+                excelPage: 1,
+                list: [],
                 rawList: [],
                 rawCount: '',
                 excelData: [],
@@ -146,7 +160,7 @@
                     this.$message.error(error);
                 });
             },
-            OnSingleDelete(x) {
+            onSingleDelete(x) {
                 this.list.splice(x, 1);
             }, onMultiDelete() {
                 for (let i in this.multipleSelection) {
@@ -171,32 +185,53 @@
                 this.excelData = [];
                 this.dialogTableVisible = false
             }, onReset() {
-                this.list = this.rawList;
-                this.page = 1;
+                console.info("reset");
+                this.fetchStudentData();
+                this.$refs.fileUpload.clearFiles();
                 this.$refs.multipleTable.clearSelection();
             }, onSubmit() {
+                this.openMsgBox();
+            }, doSubmit() {
+                this.loading = true;
                 let x = {
                     courseId: this.subject.id,
-                    studentList: this.list
+                    studentList: [],
                 };
                 x.courseId = this.subject.id;
                 x.studentList = this.list.map(x => {
                     return {userId: x.id, username: x.name, specialty: x.major}
                 });
-                // let courseVO = JSON.stringify(x);
                 this.$axios.post('/api/subject/user', x).then(response => {
-                    if (response.data.message === 'success') {
-                        this.$message({
-                            message: '提交成功',
-                            type: 'success'
-                        });
-                        this.fetchData();
-                    } else {
-                        this.$message.error("提交失败");
-                    }
+                    let x = response.data.data;
+                    console.info(x);
+                    let msg = "添加 " + x.addStu + ", 删除 " + x.deleteStu;
+                    this.openMsg(msg);
                 }).catch(error => {
                     this.$message.error(error);
                 }).finally(() => {
+                    this.loading = false;
+                    this.onReset();
+                });
+            }, openMsg(x) {
+                this.$message({
+                    showClose: true,
+                    message: x,
+                    duration: 0
+                });
+            }, openMsgBox() {
+                this.$confirm('确定提交修改?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    console.info("confirm");
+                    this.doSubmit();
+                }).catch(error => {
+                    console.info(error);
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
                 });
             },
             _file(file) {

@@ -155,6 +155,8 @@
                             message: '发布成功',
                             type: 'success'
                         });
+                    } else {
+                        this.$message.error("发布失败");
                     }
                 }).catch(error => {
                     this.$message.error(error);

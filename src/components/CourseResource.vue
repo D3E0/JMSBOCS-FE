@@ -1,28 +1,29 @@
 <template>
     <div>
-        <el-table :data="tableData" style="width: 100%" :show-header="true">
-            <el-table-column>
-                <template slot="header" slot-scope="scope">
-                    <el-button type="primary" size="medium" plain
-                               @click="onUpload" v-if="isTch">
-                        上传资源
-                    </el-button>
-                </template>
+        <div style="height: 80px;" v-if="isTch">
+            <el-upload ref="upload" :limit="1" action=""
+                       :before-upload="beforeUpload"
+                       :on-exceed="handleExceed">
+                <el-button slot="trigger" size="small" type="primary">上传文件</el-button>
+            </el-upload>
+        </div>
+
+        <el-table :data="list" style="width: 100%"
+                  v-loading="loading" :show-header="false">
+            <el-table-column min-width="200px">
                 <template slot-scope="scope">
                     <img src="../assets/file.png" height="60px" alt="课程图片">
                     <div class="item">
-                        <div class="title">
+                        <div class="title" style="overflow: hidden">
                             <el-button type="text" style="font-size: 18px">
-                                {{scope.row.courseName}}
+                                {{scope.row.courseResourceFilename}}
                             </el-button>
                         </div>
                         <div class="time">
-                            <span class="ctime">
-                                <i class="el-icon-date mr5"></i>{{scope.row.academicYear}} 学年
-                            </span>
-                            <span class="ctime">
-                                <i class="el-icon-time mr5"></i>第 {{scope.row.semester}} 学期
-                            </span>
+                    <span class="ctime">
+                    <i class="el-icon-date mr5"></i>
+                    {{new Date(scope.row.uploadTime).toLocaleString('chinese', {hour12: false})}}
+                    </span>
                         </div>
                     </div>
                 </template>
@@ -34,7 +35,7 @@
                                    @click="handleDownload(scope.$index, scope.row)">下载
                         </el-button>
                         <el-button size="small" type="danger" v-if="isTch"
-                                   @click="handleDelete(scope.$index, scope.row)">删除
+                                   @click="onDelete(scope.$index, scope.row)">删除
                         </el-button>
                     </div>
                 </template>
@@ -44,41 +45,152 @@
 </template>
 
 <script>
+    import * as qiniu from 'qiniu-js'
+
     export default {
         name: "CourseResource",
-        props: ['courseId'],
         data() {
             return {
+                loading: false,
                 isTch: this.$root.isTch,
-                tableData: [{
-                    courseName: '4原.jpg',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }, {
-                    courseName: 'C++',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }, {
-                    courseName: 'PHP',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }, {
-                    courseName: 'Python',
-                    academicYear: '2016',
-                    semester: '2',
-                    teacherName: '赵老师'
-                }]
+                courseId: this.$root.courseId,
+                course: {
+                    courseName: '',
+                    academicYear: '',
+                    semester: '',
+                },
+                list: [],
+                selectedId: 0,
+                selectedIndex: 0,
             }
+        }, created() {
+            this.fetchData();
+            this.fetchCourseData();
         }, methods: {
+            fetchData() {
+                this.loading = true;
+                this.axios.get('/api/resourceList', {
+                    params: {
+                        courseId: this.courseId
+                    }
+                }).then(response => {
+                    this.list = response.data.data;
+                }).catch(error => {
+                    this.$message.error(error);
+                }).finally(() => {
+                    this.loading = false;
+                });
+            }, fetchCourseData() {
+                this.loading = true;
+                this.axios.get('/api/subject', {
+                    params: {
+                        id: this.courseId
+                    }
+                }).then(response => {
+                    this.course = response.data.data;
+                }).catch(error => {
+                    this.$message.error(error);
+                }).finally(() => {
+                    this.loading = false;
+                });
+            },
             handleDownload() {
-
+                this.axios.get('/api/resource', {
+                    params: {
+                        id: this.selectedId
+                    }
+                }).then(response => {
+                    console.info(response.data.data);
+                }).catch(error => {
+                    this.$message.error(error);
+                }).finally(() => {
+                    this.loading = false;
+                });
             }, handleDelete() {
-
-            }, onUpload() {
-
+                this.loading = true;
+                this.axios.delete('/api/resource', {
+                    params: {
+                        id: this.selectedId
+                    }
+                }).then(response => {
+                    if (response.data.message === 'success') {
+                        this.$message({
+                            message: '删除成功',
+                            type: 'success'
+                        });
+                    }
+                    this.list.splice(this.selectedIndex, 1);
+                }).catch(error => {
+                    this.$message.error(error);
+                }).finally(() => {
+                    this.loading = false;
+                });
+            }, onDelete(index, row) {
+                this.selectedId = row.courseResourceId;
+                this.selectedIndex = index;
+                this.openMsgBox();
+            }, openMsgBox() {
+                this.$confirm('确定删除该资源?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    console.info("confirm");
+                    this.handleDelete();
+                }).catch((error) => {
+                    console.info(error);
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }, handleExceed() {
+                this.$message.warning('最多选择 1 个文件');
+            }, beforeUpload(file) {
+                console.info("submit");
+                this.loading = true;
+                this.axios.get('/api/token', {
+                    params: {
+                        id: this.courseId,
+                    }
+                }).then(response => {
+                    let token = response.data.data;
+                    this.doUpload(file, token);
+                }).catch(error => {
+                    this.$message.error(error);
+                    this.loading = false;
+                });
+                return false;
+            }, doUpload(file, token) {
+                let key = `resource-${this.course.courseName}-${this.course.academicYear}-${this.course.semester}-${file.name}`;
+                console.info(key);
+                let observable = qiniu.upload(file, key, token);
+                let subscription = observable.subscribe((() => {
+                }), (error) => {
+                    console.info(error);
+                    this.$message.error(error);
+                    this.loading = false;
+                }, (res) => {
+                    console.info(res);
+                    const params = new URLSearchParams();
+                    params.append('courseId', this.courseId);
+                    params.append('filename', file.name);
+                    this.$axios.post('/api/resource', params).then(response => {
+                        if (response.data.message === 'success') {
+                            this.$message({
+                                message: '上传成功',
+                                type: 'success'
+                            });
+                        } else {
+                            this.$message.error("上传失败");
+                        }
+                    }).catch(error => {
+                        this.$message.error(error);
+                    }).finally(() => {
+                        this.loading = false;
+                        this.fetchData();
+                    });
+                });
             }
         }
     }

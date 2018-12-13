@@ -7,8 +7,7 @@
                 <el-button slot="trigger" size="small" type="primary">上传文件</el-button>
             </el-upload>
         </div>
-
-        <el-table :data="list" style="width: 100%"
+        <el-table :data="tableData" style="width: 100%"
                   v-loading="loading" :show-header="false">
             <el-table-column min-width="200px">
                 <template slot-scope="scope">
@@ -41,6 +40,11 @@
                 </template>
             </el-table-column>
         </el-table>
+        <div style="margin-top: 10px;margin-left: 13px">
+            <el-pagination layout="total, prev, pager, next" :current-page.sync="page"
+                           :total="list.length" :page-size="5">
+            </el-pagination>
+        </div>
     </div>
 </template>
 
@@ -49,6 +53,17 @@
 
     export default {
         name: "CourseResource",
+        computed: {
+            tableData() {
+                let offset = (this.page - 1) * 5;
+                let end = Math.min(this.list.length, offset + 5);
+                console.info("change " + offset + " " + end + " " + this.page);
+                if (offset === end) {
+                    console.info("bug");
+                }
+                return this.list.slice(offset, end);
+            },
+        },
         data() {
             return {
                 loading: false,
@@ -62,6 +77,7 @@
                 list: [],
                 selectedId: 0,
                 selectedIndex: 0,
+                page: 1,
             }
         }, created() {
             this.fetchData();
@@ -94,13 +110,17 @@
                     this.loading = false;
                 });
             },
-            handleDownload() {
+            handleDownload(index, obj) {
                 this.axios.get('/api/resource', {
                     params: {
-                        id: this.selectedId
+                        id: obj.courseResourceId
                     }
                 }).then(response => {
                     console.info(response.data.data);
+                    let a = document.createElement("a");
+                    a.download = obj.courseResourceFilename;
+                    a.href = response.data.data.downloadUrl;
+                    a.click();
                 }).catch(error => {
                     this.$message.error(error);
                 }).finally(() => {
@@ -162,7 +182,7 @@
                 });
                 return false;
             }, doUpload(file, token) {
-                let key = `resource-${this.course.courseName}-${this.course.academicYear}-${this.course.semester}-${file.name}`;
+                let key = `resource-${this.course.courseName}-${this.course.academicYear}-${this.course.semester}/${file.name}`;
                 console.info(key);
                 let observable = qiniu.upload(file, key, token);
                 let subscription = observable.subscribe((() => {
@@ -175,7 +195,7 @@
                     const params = new URLSearchParams();
                     params.append('courseId', this.courseId);
                     params.append('filename', file.name);
-                    this.$axios.post('/api/resource', params).then(response => {
+                    this.axios.post('/api/resource', params).then(response => {
                         if (response.data.message === 'success') {
                             this.$message({
                                 message: '上传成功',

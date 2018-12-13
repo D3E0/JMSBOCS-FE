@@ -56,7 +56,7 @@
         color: #495060;
     }
 
-    .name {
+    .profile .name {
         font-weight: 600;
         color: #495060;
         font-size: 20px;

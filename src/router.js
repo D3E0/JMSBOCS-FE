@@ -7,10 +7,10 @@ export default new Router({
     // mode: 'history',
     base: process.env.BASE_URL,
     routes: [
-        {
-            path: '/',
-            redirect: '/announcement'
-        },
+        // {
+        //     path: '/',
+        //     redirect: '/announcement'
+        // },
         {
             path: '/announcement',
             component: () => import( './components/CourseAnnouncement.vue')

@@ -39,9 +39,6 @@
         components: {
             commentItem
         },
-        props: {
-            // courseId: ,userId
-        },
         data() {
             return {
                 loading: true,

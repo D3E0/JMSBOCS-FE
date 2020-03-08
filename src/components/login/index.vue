@@ -10,15 +10,15 @@
             </div>
         </div>
         <el-form ref="form" :model="form" label-width="70px">
-            <el-form-item label="用户名" prop="id">
-                <el-input v-model="form.id"></el-input>
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="form.username"/>
             </el-form-item>
-            <el-form-item label="密码" prop="pass">
-                <el-input v-model="form.pass" type="password"
+            <el-form-item label="密码" prop="password">
+                <el-input v-model="form.password" type="password"
                           @blur="handleBlur" @focus="handleFocus">
                 </el-input>
             </el-form-item>
-            <el-form-item style="text-align: center; ">
+            <el-form-item style="text-align: center;">
                 <el-button style="width: 100px;" size="medium"
                            type="primary" @click="onSubmit">登陆
                 </el-button>
@@ -34,31 +34,27 @@
         data() {
             return {
                 loading: false,
-                form: {id: '', pass: ''},
+                form: {username: '', password: ''},
                 showEyes: false,
             }
         }, methods: {
             onSubmit() {
-                if (this.form.id === '' || this.form.pass === '') {
+                if (this.form.username === '' || this.form.password === '') {
                     this.$message.error("请先填写用户名、密码");
                     return;
                 }
-                const params = new URLSearchParams();
-                params.append('id', this.form.id);
-                params.append('pass', this.form.pass);
                 this.loading = true;
-                this.axios.post('/api/login', params).then(response => {
-                    if (response.data.message === 'success') {
-                        this.$message({
-                            message: '登陆成功',
-                            type: 'success'
-                        });
-                        window.location.href = '/home'
-                    } else {
-                        this.$message.error("登陆失败");
-                    }
+                this.$store.dispatch('Login', this.form).then(() => {
+                    this.$message({
+                        message: '登陆成功',
+                        type: 'success'
+                    });
+                    console.info('success');
+                    // window.location.href = '/home';
+                    this.$router.push({path: this.redirect || '/'})
                 }).catch(error => {
-                    this.$message.error(error);
+                    console.info(error);
+                    this.$message.error('登陆失败了');
                 }).finally(() => {
                     this.loading = false;
                 });
@@ -89,7 +85,7 @@
         z-index: 1000;
         width: 211px;
         height: 108px;
-        background-image: url("../assets/owl-login.png");
+        background-image: url("../../assets/owl-login.png");
         position: absolute;
         left: 50%;
         margin-left: -80px;
@@ -97,7 +93,7 @@
 
     @media all and (-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 1.5/1), (min-device-pixel-ratio: 1.5), (min-resolution: 138dpi), (min-resolution: 1.5dppx) {
         #login #owl-login {
-            background-image: url("../assets/owl-login@2x.png");
+            background-image: url("../../assets/owl-login@2x.png");
             -webkit-background-size: 211px 108px;
             -moz-background-size: 211px 108px;
             background-size: 211px 108px;
@@ -158,7 +154,7 @@
         position: absolute;
         left: 20px;
         top: 40px;
-        background-image: url("../assets/owl-login-arm.png");
+        background-image: url("../../assets/owl-login-arm.png");
         -webkit-transition: 0.3s ease-out;
         -moz-transition: 0.3s ease-out;
         -o-transition: 0.3s ease-out;
@@ -172,7 +168,7 @@
 
     @media all and (-webkit-min-device-pixel-ratio: 1.5), (min--moz-device-pixel-ratio: 1.5), (-o-min-device-pixel-ratio: 1.5/1), (min-device-pixel-ratio: 1.5), (min-resolution: 138dpi), (min-resolution: 1.5dppx) {
         #login #owl-login .arms .arm {
-            background-image: url("../assets/owl-login-arm@2x.png");
+            background-image: url("../../assets/owl-login-arm@2x.png");
             -webkit-background-size: 40px 65px;
             -moz-background-size: 40px 65px;
             background-size: 40px 65px;

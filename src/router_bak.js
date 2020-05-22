@@ -13,15 +13,15 @@
 //         // },
 //         {
 //             path: '/announcement',
-//             component: () => import( './components/CourseAnnouncement.vue')
+//             component: () => import( './components/courseAnnouncement.vue')
 //         },
 //         {
 //             path: '/resource',
-//             component: () => import( './components/CourseResource.vue')
+//             component: () => import( './components/resource.vue')
 //         },
 //         {
 //             path: '/comment',
-//             component: () => import( './components/comment.vue')
+//             component: () => import( './components/index.vue')
 //         },
 //         {
 //             path: '/userhome',
@@ -30,27 +30,27 @@
 //
 //         {
 //             path: '/list',
-//             component: () => import( './components/SubjectList.vue')
+//             component: () => import( './components/list.vue')
 //         },
 //         {
 //             path: '/create',
-//             component: () => import( './components/SubjectCreate.vue')
+//             component: () => import( './components/create.vue')
 //         },
 //         {
 //             path: '/manage',
-//             component: () => import( './components/SubjectManage.vue')
+//             component: () => import( './components/manage.vue')
 //         },
 //         {
 //             path: '/stuProfile',
-//             component: () => import('./components/stuProfile.vue')
+//             component: () => import('./components/studentProfile.vue')
 //         },
 //         {
 //             path: '/tchProfile',
-//             component: () => import('./components/tchProfile.vue')
+//             component: () => import('./components/teacherProfile.vue')
 //         },
 //         {
 //             path: '/updatePwd',
-//             component: () => import( './components/changePwd.vue')
+//             component: () => import( './components/password.vue')
 //         },
 //         {
 //             path: '/qiniu',
@@ -62,7 +62,7 @@
 //         },
 //         // {
 //         //     path: '/subject',
-//         //     component: () => import( './components/Subject.vue'),
+//         //     component: () => import( './components/index.vue'),
 //         //     children: [
 //         //         {
 //         //             path: '',
@@ -70,22 +70,22 @@
 //         //         },
 //         //         {
 //         //             path: 'list',
-//         //             component: () => import( './components/SubjectList.vue')
+//         //             component: () => import( './components/list.vue')
 //         //         },
 //         //         {
 //         //             path: 'create',
-//         //             component: () => import( './components/SubjectCreate.vue')
+//         //             component: () => import( './components/create.vue')
 //         //         },
 //         //         {
 //         //             path: 'manage',
-//         //             component: () => import( './components/SubjectManage.vue')
+//         //             component: () => import( './components/manage.vue')
 //         //         },
 //         //     ]
 //         // },
 //         // {
 //         //     path: '/course',
 //         //     props: true,
-//         //     component: () => import( './components/Course.vue'),
+//         //     component: () => import( './components/index.vue'),
 //         //     children: [
 //         //         {
 //         //             path: '',
@@ -95,19 +95,19 @@
 //         //             path: 'comment',
 //         //             name: 'comment',
 //         //             props: true,
-//         //             component: () => import( './components/comment.vue')
+//         //             component: () => import( './components/index.vue')
 //         //         },
 //         //         {
 //         //             path: 'announcement',
 //         //             name: 'announcement',
 //         //             props: true,
-//         //             component: () => import( './components/CourseAnnouncement.vue')
+//         //             component: () => import( './components/courseAnnouncement.vue')
 //         //         },
 //         //         {
 //         //             path: 'resource',
 //         //             name: 'resource',
 //         //             props: true,
-//         //             component: () => import( './components/CourseResource.vue')
+//         //             component: () => import( './components/resource.vue')
 //         //         },
 //         //         {
 //         //             path: 'userhome',

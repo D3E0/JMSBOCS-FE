@@ -1,6 +1,6 @@
-import {login, logout, getInfo} from '@/api/login'
+import {login, logout, getId} from '@/api/login'
+import {userInfo} from '@/api/user'
 import {getToken, setToken, removeToken} from '@/utils/auth'
-import da from "element-ui/src/locale/lang/da";
 
 const user = {
     state: {
@@ -35,15 +35,16 @@ const user = {
             const username = userInfo.username.trim();
             return new Promise((resolve, reject) => {
                 login(username, userInfo.password).then(response => {
-                    const data = response.data;
-                    if (data !== null) {
-                        let token = data.token;
+                    let token  = response.data;
+                    if (token !== null && response.message === 'success') {
                         console.info(token);
                         commit('SET_TOKEN', token);
                         setToken(token);
+                        commit('SET_ID', username);
+                        resolve(token)
+                    }else{
+                        reject(response.message)
                     }
-                    commit('SET_ID', username);
-                    resolve(data)
                 }).catch(error => {
                     reject(error)
                 })
@@ -53,17 +54,26 @@ const user = {
         // 获取用户信息
         GetInfo({commit, state}) {
             return new Promise((resolve, reject) => {
-                getInfo(state.token).then(response => {
-                    const data = response.data;
-                    console.info(data);
-                    if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-                        commit('SET_ROLES', data.roles)
-                    } else {
-                        reject('getInfo: roles must be a non-null array !')
+                getId().then().then(response => {
+                    let id = response.data;
+                    console.info(id);
+                    if(id === "null") {
+                        reject('getId: invalid token !')
                     }
-                    commit('SET_NAME', data.name);
-                    commit('SET_ID', data.id);
-                    resolve(response)
+                    userInfo(id).then(response => {
+                        const data = response.data;
+                        console.info(data);
+                        if (data && data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+                            commit('SET_ROLES', data.roles)
+                        } else {
+                            reject('getInfo: roles must be a non-null array !')
+                        }
+                        commit('SET_NAME', data.username);
+                        commit('SET_ID', data.userId);
+                        resolve(response)
+                    }).catch(error => {
+                        reject(error)
+                    })
                 }).catch(error => {
                     reject(error)
                 })
@@ -71,9 +81,9 @@ const user = {
         },
 
         // 登出
-        LogOut({commit, state}) {
+        Logout({commit, state}) {
             return new Promise((resolve, reject) => {
-                logout(state.token).then(() => {
+                logout().then(() => {
                     commit('SET_TOKEN', '');
                     commit('SET_ROLES', []);
                     removeToken();

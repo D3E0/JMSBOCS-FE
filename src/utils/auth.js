@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 const TokenKey = 'JMSBOCS-Token';
 
 export function getToken() {
-    console.info(Cookies.get());
+    // console.info(Cookies.get());
     return Cookies.get(TokenKey)
 }
 

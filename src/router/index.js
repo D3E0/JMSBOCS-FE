@@ -7,23 +7,187 @@ import Router from 'vue-router'
 Vue.use(Router);
 
 import Layout from '@/components/layout'
+import Course from '@/components/course'
+import Subject from '@/components/subject'
 
 export const constantRouterMap = [
     {path: '/login', component: () => import('@/components/login')},
-    // {path: '/home', component: () => import('../components/Home.vue')},
+    {path: '/xx', redirect: '/login',},
     // {path: '/404', component: () => import('@/views/404'), hidden: true},
-
     {
         path: '/',
         component: Layout,
         redirect: '/home',
-        name: 'Home',
-        children: [{
-            path: 'home',
-            meta: {title: '总览面板', icon: 'dashboard'},
-            component: () => import('@/components/layout/Head.vue')
-        }]
-    }
+        name: 'home',
+        children: [
+            {
+                path: 'home',
+                name: 'home',
+                meta: {title: '首页', icon: 'dashboard'},
+                component: () => import('@/components/home/list.vue')
+            }, {
+                path: 'jobList',
+                name: 'jobList',
+                meta: {title: '作业列表', icon: 'dashboard'},
+                component: () => import('@/components/job/list')
+            }, {
+                path: 'preview/:jobId/:id',
+                name: 'preview',
+                meta: {title: '作业预览', icon: 'dashboard'},
+                component: () => import('@/components/preview')
+            },
+            {
+                // path: 'video/:filePath/filename',
+                path: 'video',
+                name: 'previewVideo',
+                meta: {title: '作业预览', icon: 'dashboard'},
+                component: () => import('@/components/preview/video')
+            }, {
+                path: 'job/:id',
+                name: 'job',
+                redirect: 'job/:id/detail',
+                meta: {title: '作业', icon: 'dashboard'},
+                component: () => import('@/components/job'),
+                children: [
+                    {
+                        path: 'detail',
+                        name: 'detail',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/job/detail')
+                    }, {
+                        path: 'edit',
+                        name: 'edit',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/job/edit')
+                    }, {
+                        path: 'history',
+                        name: 'history',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/job/history')
+                    },
+                ]
+            }, {
+                path: 'user',
+                name: 'user',
+                redirect: 'user/profile',
+                meta: {title: '个人信息', icon: 'dashboard'},
+                component: () => import('@/components/user'),
+                children: [
+                    {
+                        path: 'profile',
+                        name: 'profile',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/user/profile')
+                    }, {
+                        path: 'password',
+                        name: 'password',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/user/password')
+                    }, {
+                        path: 'notify',
+                        name: 'notify',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/user/notify')
+                    },
+                    {
+                        path: 'add',
+                        name: 'add',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/user/add')
+                    }]
+            }, {
+                path: 'admin',
+                name: 'admin',
+                redirect: 'admin/category',
+                meta: {title: '个人信息', icon: 'dashboard'},
+                component: () => import('@/components/admin'),
+                children: [
+                    {
+                        path: 'category',
+                        name: 'category',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/admin/category')
+                    }, {
+                        path: 'user',
+                        name: 'adminUser',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/admin/user')
+                    }]
+            },
+            {
+                path: 'subject',
+                component: Subject,
+                redirect: 'subject/list',
+                meta: {title: '课程', icon: 'dashboard'},
+                name: 'subject',
+                children: [
+                    {
+                        path: 'list',
+                        name: 'list',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/subject/list')
+                    }, {
+                        path: 'create',
+                        name: 'create',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/subject/create')
+                    }, {
+                        path: 'manage',
+                        name: 'manage',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/subject/manage')
+                    }, {
+                        path: 'chapter',
+                        name: 'chapter',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/subject/chapter/index')
+                    }, {
+                        path: 'favor',
+                        name: 'favor',
+                        meta: {title: '总览面板', icon: 'dashboard'},
+                        component: () => import('@/components/subject/favor')
+                    },]
+            },
+            {
+                path: 'course/:cid/',
+                component: Course,
+                redirect: 'course/:cid/announcement',
+                meta: {title: '课程', icon: 'dashboard'},
+                name: 'course',
+                children: [{
+                    path: 'announcement',
+                    name: 'announcement',
+                    meta: {title: '总览面板', icon: 'dashboard'},
+                    component: () => import('@/components/announcement/courseAnnouncement')
+                }, {
+                    path: 'userHome',
+                    name: 'userHome',
+                    meta: {title: '总览面板', icon: 'dashboard'},
+                    component: () => import('@/components/course/userHome')
+                }, {
+                    path: 'resource',
+                    name: 'resource',
+                    meta: {title: '总览面板', icon: 'dashboard'},
+                    component: () => import('@/components/course/resource')
+                }, {
+                    path: 'comment',
+                    name: 'comment',
+                    meta: {title: '总览面板', icon: 'dashboard'},
+                    component: () => import('@/components/comment')
+                }, {
+                    path: 'job',
+                    name: 'courseJob',
+                    meta: {title: '总览面板', icon: 'dashboard'},
+                    component: () => import('@/components/course/jobList')
+                }, {
+                    path: 'chapter',
+                    name: 'courseChapter',
+                    meta: {title: '总览面板', icon: 'dashboard'},
+                    component: () => import('@/components/course/chapter')
+                }]
+            },]
+    },
+
 ];
 
 export const asyncRouterMap = [
@@ -93,7 +257,7 @@ export const asyncRouterMap = [
 ];
 
 export default new Router({
-    mode: 'history', //后端支持可开
+    // mode: 'history', //后端支持可开
     scrollBehavior: () => ({y: 0}),
     routes: constantRouterMap
 })

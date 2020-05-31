@@ -3,7 +3,7 @@
        <span class="headTitle">
             课程{{job.courseName}}的{{job.jobTitle}}
        </span>
-        <span style="float: right" v-if="isTeacher">
+        <span style="float: right" v-if="myCourse">
             <el-button type="warning" @click="dialogFormVisible = true">编辑</el-button>
             <el-button type="danger" @click="openMsgBox()">删除</el-button>
         </span>
@@ -18,38 +18,42 @@
             <span class="Tag greenColor" v-else-if="!job.started">Pending</span>
             <span class="Tag greenColor" v-else>UnderWay</span>
         </div>
-        <div>
-            <p class="title">状态</p>
-            <div class="content">
-                <span class="Tag greenColor" v-if="jobItem ">已提交</span>
-                <span class="Tag redColor " v-else>未提交</span>
-                <el-button type="text" style="color: #909399; margin-left: 10px" @click="onPreview" v-if="jobItem">
-                    {{jobItem.filename}}
-                </el-button>
+        <template v-if="job.study">
+
+
+            <div>
+                <p class="title">状态</p>
+                <div class="content">
+                    <span class="Tag greenColor" v-if="jobItem ">已提交</span>
+                    <span class="Tag redColor " v-else>未提交</span>
+                    <el-button type="text" style="color: #909399; margin-left: 10px" @click="onPreview" v-if="jobItem">
+                        {{jobItem.filename}}
+                    </el-button>
+                </div>
             </div>
-        </div>
-        <div v-if="jobItem">
-            <p class="title">成绩</p>
-            <div class="content">
-                <span class="Tag brownColor" v-if="!jobItem.score">未批阅</span>
-                <span v-else>{{jobItem.score}}</span>
+            <div v-if="jobItem">
+                <p class="title">成绩</p>
+                <div class="content">
+                    <span class="Tag brownColor" v-if="!jobItem.score">未批阅</span>
+                    <span v-else>{{jobItem.score}}</span>
+                </div>
             </div>
-        </div>
-        <p class="title">作业提交</p>
-        <div class="content">
-            <el-upload class="upload-demo" ref="upload"
-                       action="/api/file/upload/v2"
-                       :data="{path: savePath, customFilename: filename}"
-                       :headers="{'X-Token': this.token}"
-                       name="submitFile"
-                       :on-success="handleSuccess"
-                       :before-upload="beforeUpload"
-                       :http-request="upload"
-                       :auto-upload="true">
-                <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-                <div slot="tip" class="el-upload__tip">请上传一个作业文件</div>
-            </el-upload>
-        </div>
+            <p class="title">作业提交</p>
+            <div class="content">
+                <el-upload class="upload-demo" ref="upload"
+                           action="/api/file/upload/v2"
+                           :data="{path: savePath, customFilename: filename}"
+                           :headers="{'X-Token': this.token}"
+                           name="submitFile"
+                           :on-success="handleSuccess"
+                           :before-upload="beforeUpload"
+                           :http-request="upload"
+                           :auto-upload="true">
+                    <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                    <div slot="tip" class="el-upload__tip">请上传一个作业文件</div>
+                </el-upload>
+            </div>
+        </template>
 
         <el-dialog title="作业编辑" :visible.sync="dialogFormVisible">
             <edit v-bind:job="job" v-on:do-close="dialogFormVisible=false"/>
@@ -86,7 +90,7 @@
                 job: {},
                 token: getToken(),
                 jobItem: {},
-                isTeacher: store.getters.isTeacher,
+                myCourse: false,
             }
         }, created() {
             this.fetchData();
@@ -94,9 +98,10 @@
         methods: {
             fetchData() {
                 this.loading = true;
-                jobInfo(this.jobId).then(response => {
+                jobInfo(this.jobId, this.userId).then(response => {
                     console.info(response);
                     this.job = response.data;
+                    this.myCourse = parseInt(response.data.teacherId) === parseInt(store.getters.id);
                 }).catch(error => {
                     this.$message.error(error);
                 }).finally(() => {

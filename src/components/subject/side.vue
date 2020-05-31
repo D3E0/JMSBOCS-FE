@@ -26,14 +26,28 @@
 
 <script>
     import store from '@/store'
+    import {jobInfo,} from "@/api/job";
 
     export default {
         name: "Side",
         data() {
             return {
                 isTeacher: store.getters.isTeacher,
-                isStudent: store.getters.isStudent
+                isStudent: store.getters.isStudent,
+                id: store.getters.id,
+                myCourse: false,
             };
+        }, created() {
+            // this.fetchData();
+        }, methods: {
+            fetchData() {
+                jobInfo(this.$route.params.id).then(response => {
+                    this.myCourse = response.data.teacherId === this.id;
+                }).catch(error => {
+                    this.$message.error(error);
+                });
+
+            }
         }
     }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <div class="custom" v-loading="loading">
-        <el-row style="height: 70px">
+        <el-row >
             <el-col :span="10">
                 <span class="formLabel">课程</span>
                 <el-select v-model="courseId" placeholder="请先选择课程" size="small"

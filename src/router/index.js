@@ -30,6 +30,12 @@ export const constantRouterMap = [
                 name: 'jobList',
                 meta: {title: '作业列表', icon: 'dashboard'},
                 component: () => import('@/components/job/list')
+            },
+            {
+                path: 'scoreList',
+                name: 'scoreList',
+                meta: {title: '成绩列表', icon: 'dashboard'},
+                component: () => import('@/components/score/list')
             }, {
                 path: 'preview/:jobId/:id',
                 name: 'preview',

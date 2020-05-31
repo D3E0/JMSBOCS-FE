@@ -13,12 +13,14 @@ export function teacherInfo(courseId) {
     })
 }
 
-export function courseList() {
+export function courseList(keyword, page, limit) {
+    limit = limit ? limit : 100;
+    page = page ? page : 1;
     return request({
         url: '/api/course/list',
         method: 'get',
         params: {
-            userId: store.getters.id
+            userId: store.getters.id, keyword, page, limit
         }
     })
 }

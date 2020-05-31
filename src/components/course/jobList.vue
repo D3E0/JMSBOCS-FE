@@ -1,6 +1,6 @@
 <template>
     <div v-loading="loading">
-        <el-button type="success" style="float: right" @click="dialogFormVisible = true" v-if="isTeacher">发布作业
+        <el-button type="success" style="float: right" @click="dialogFormVisible = true" v-if="myCourse">发布作业
         </el-button>
         <div style="margin-left: 20px;">
             <el-input v-model="search" placeholder="请输入作业标题" prefix-icon="el-icon-search"
@@ -60,6 +60,7 @@
     import {courseJobList} from '@/api/job'
     import edit from '@/components/job/edit.vue'
     import store from '@/store'
+    import {courseInfo,} from "@/api/course";
 
     export default {
         name: "List", components: {
@@ -95,7 +96,7 @@
                 loading: false,
                 list: [],
                 page: 1,
-                isTeacher: store.getters.isTeacher
+                myCourse: false,
             }
         },
         created() {
@@ -111,6 +112,12 @@
                     this.$message.error(error);
                 }).finally(() => {
                     this.loading = false;
+                });
+
+                courseInfo(this.$route.params.cid).then(response => {
+                    this.myCourse = parseInt(response.data.teacherId) === parseInt(store.getters.id);
+                }).catch(error => {
+                    this.$message.error(error);
                 });
             },
             onDetail(index, obj) {

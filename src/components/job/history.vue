@@ -6,26 +6,23 @@
                       style="width: 300px"></el-input>
             <el-button style="margin-left: 20px" type="primary" size="small" @click="handleSearch">搜索</el-button>
 
-            <el-button type="primary" style="float: right" size="small" @click="onExportAll">导出</el-button>
+            <el-button type="primary" style="float: right;margin-right: 150px" size="small" @click="onExportAll">导出</el-button>
             <el-button type="success" style="float: right" size="small" @click="onDownloadAll">下载全部</el-button>
         </div>
         <el-table :data="tableData" style="width: 100%">
-            <el-table-column prop="userId" label="学号"/>
-            <el-table-column prop="userName" label="姓名"/>
+            <el-table-column prop="userId" label="学号" width="100px"/>
+            <el-table-column prop="userName" label="姓名" width="80px"/>
             <el-table-column prop="filename" label="文件名"/>
             <el-table-column prop="lastSubmitTime" label="提交时间"/>
             <el-table-column prop="score" label="成绩" width="80px"/>
-            <el-table-column label="操作">
+            <el-table-column label="操作" min-width="150px">
                 <template slot-scope="scope">
-
                     <el-button size="mini" plain type="primary" :disabled="!scope.row.lastSubmitTime"
                                @click="onDownload(scope.$index, scope.row)">下载
                     </el-button>
-
                     <el-button size="mini" plain type="primary" :disabled="!scope.row.lastSubmitTime"
                                @click="onPreview(scope.$index, scope.row)">批阅
                     </el-button>
-
                     <el-button size="mini" plain type="danger" :disabled="!scope.row.lastSubmitTime"
                                @click="openMsgBox(scope.$index, scope.row)">删除
                     </el-button>

@@ -5,12 +5,12 @@
             <el-col :span="24" class="panel-title" v-if="!isTeacher">已选课程</el-col>
         </el-row>
         <div>
-            <el-input v-model="search" placeholder="请输入课程标题" prefix-icon="el-icon-search"
+            <el-input v-model="form.keyword" placeholder="请输入课程标题" prefix-icon="el-icon-search"
                       style="width: 300px"></el-input>
             <el-button style="margin-left: 20px" type="primary" @click="handleSearch">搜索</el-button>
         </div>
 
-        <el-table :data="tableData" style="width: 100%"
+        <el-table :data="list" style="width: 100%"
                   :show-header="false" v-loading="loading">
             <el-table-column min-width="180px">
                 <template slot-scope="scope">
@@ -49,8 +49,9 @@
         </el-table>
         <div style="margin-top: 10px;margin-left: 13px">
             <el-pagination layout="total, prev, pager, next"
-                           :current-page.sync="page"
-                           :total.sync="itemArray.length">
+                           :current-page.sync="form.page"
+                           @current-change="fetchData"
+                           :total.sync="this.count">
             </el-pagination>
         </div>
     </div>
@@ -92,9 +93,14 @@
                 pic: pic,
                 loading: true,
                 list: [],
-                count: '',
+                count: 0,
                 page: 1,
                 courseIndex: 0,
+                form: {
+                    keyword: "",
+                    page: 1,
+                    limit: 10,
+                },
             }
         },
         created() {
@@ -150,7 +156,7 @@
             },
             fetchData() {
                 this.loading = true;
-                courseList().then(response => {
+                courseList(this.form.keyword, this.form.page, this.form.limit).then(response => {
                     this.list = response.data;
                     this.count = response.count;
                 }).catch(error => {
@@ -159,7 +165,9 @@
                     this.loading = false;
                 });
             }, handleSearch() {
-                this.searchVal = this.search;
+                this.form.page = 1;
+                this.fetchData();
+                // this.searchVal = this.search;
             }
         }
 

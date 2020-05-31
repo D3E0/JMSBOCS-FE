@@ -21,6 +21,12 @@
             <i class="el-icon-menu"/>
             <span slot="title">课程讨论</span>
         </el-menu-item>
+
+<!--        <el-menu-item index="score" :route="{path:'course'}">-->
+<!--            <i class="el-icon-menu"/>-->
+<!--            <span slot="title">课程成绩</span>-->
+<!--        </el-menu-item>-->
+
         <el-menu-item index="userHome" :route="{path:'userHome'}">
             <i class="el-icon-menu"/>
             <span slot="title">联系老师</span>
@@ -29,8 +35,30 @@
 </template>
 
 <script>
+    import store from '@/store'
+    import {courseInfo,} from "@/api/course";
+
     export default {
         name: "Side",
+        data() {
+            return {
+                isTeacher: store.getters.isTeacher,
+                isStudent: store.getters.isStudent,
+                id: store.getters.id,
+                myCourse: false,
+            };
+        }, created() {
+            // this.fetchData();
+        }, methods: {
+            fetchData() {
+                courseInfo(this.$route.params.cid).then(response => {
+                    this.myCourse = response.data.teacherId === this.id;
+                }).catch(error => {
+                    this.$message.error(error);
+                });
+
+            }
+        }
     }
 </script>
 

@@ -14,7 +14,11 @@
         <el-carousel type="card" height="300px">
             <el-carousel-item v-for="(item, index) in list" :key="index">
                 <h3 style="text-align: center" @click="onDetail(item)">{{item.courseName}}</h3>
-                <el-image :src="item.logo" fit="contain"/>
+                <el-image :src="item.logo" fit="contain">
+                    <div slot="error" class="image-slot">
+                        <el-image :src="pic" fit="fill"/>
+                    </div>
+                </el-image>
             </el-carousel-item>
         </el-carousel>
     </div>
@@ -23,6 +27,7 @@
 <script>
     import {recommend} from '@/api/course'
     import store from '@/store'
+    import pic from '@/assets/scenery.jpg'
 
     export default {
         name: "Recommend",
@@ -35,6 +40,7 @@
         },
         data() {
             return {
+                pic: pic,
                 isTeacher: store.getters.isTeacher,
                 list: [],
             }

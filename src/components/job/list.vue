@@ -5,10 +5,10 @@
 
         <el-form :model="searchForm" :inline="true" style="margin-left: 25px;margin-top: 20px;">
             <el-form-item label="作业标题">
-                <el-input v-model="searchForm.title" :clearable="true"/>
+                <el-input v-model="form.keyword" :clearable="true"/>
             </el-form-item>
             <el-form-item label="课程">
-                <el-select v-model="searchForm.course" :clearable="true">
+                <el-select v-model="form.courseId" :clearable="true">
                     <el-option v-for="item in options" :key="item.id"
                                :label="item.name" :value="item.id">
                     </el-option>
@@ -22,7 +22,7 @@
             </el-form-item>
         </el-form>
 
-        <el-table :data="tableData" :show-header="false" style="width: 100%">
+        <el-table :data="list" :show-header="false" style="width: 100%">
             <el-table-column type="expand">
                 <template slot-scope="props">
                     <div>{{props.row.jobContent}}</div>
@@ -60,8 +60,10 @@
             </el-table-column>
         </el-table>
         <div style="margin-top: 10px;margin-left: 13px">
-            <el-pagination layout="total, prev, pager, next" :current-page.sync="page"
-                           :total="itemArray.length" :page-size="5">
+            <el-pagination layout="total, prev, pager, next"
+                           :current-page.sync="form.page"
+                           @current-change="fetchData"
+                           :total.sync="this.count">
             </el-pagination>
         </div>
 
@@ -78,7 +80,8 @@
     import store from '@/store'
 
     export default {
-        name: "List", components: {
+        name: "List",
+        components: {
             edit
         },
         computed: {
@@ -121,11 +124,18 @@
                     title: "",
                     course: "",
                 },
+                form: {
+                    keyword: "",
+                    courseId: "",
+                    page: 1,
+                    limit: 10,
+                },
                 dialogFormVisible: false,
                 loading: false,
                 list: [],
                 options: [],
                 page: 1,
+                count: 0,
                 isTeacher: store.getters.isTeacher
             }
         },
@@ -135,8 +145,8 @@
         methods: {
             fetchData() {
                 this.loading = true;
-                jobList().then(response => {
-                    console.info(response);
+                jobList(this.form.keyword, this.form.courseId, this.form.page, this.form.limit).then(response => {
+                    this.count = response.count;
                     this.list = response.data;
                 }).catch(error => {
                     this.$message.error(error);
@@ -156,9 +166,11 @@
             onDetail(index, obj) {
                 this.$router.push(`/job/${obj.jobId}`);
             }, handleSearch() {
-                this.searchVal = this.search;
-                this.searchFormVal = {...this.searchForm};
-                console.info(this.searchFormVal);
+                this.form.page = 1;
+                this.fetchData();
+                // this.searchVal = this.search;
+                // this.searchFormVal = {...this.searchForm};
+                // console.info(this.searchFormVal);
             }
         },
     }

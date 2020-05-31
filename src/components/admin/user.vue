@@ -6,12 +6,30 @@
                    :on-exceed="handleExceed"
                    accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
             <el-button size="small" type="primary">
-                批量导入学生
+                批量导入用户
             </el-button>
         </el-upload>
 
+        <el-form ref="form" :model="form" :inline="true">
+            <el-form-item label="姓名">
+                <el-input v-model="form.keyword"/>
+            </el-form-item>
+            <el-form-item label="专业">
+                <el-cascader :props="props" v-model="form.major" :clearable="true"></el-cascader>
+            </el-form-item>
+            <el-form-item label="角色">
+                <el-select v-model="form.type" :clearable="true">
+                    <el-option label="学生" value="0"></el-option>
+                    <el-option label="教师" value="1"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="handleSearch">搜索</el-button>
+            </el-form-item>
+        </el-form>
+
         <el-table ref="multipleTable"
-                  :data="tableData"
+                  :data="rawList"
                   tooltip-effect="dark"
                   style="width: 100%"
                   v-loading="loading">
@@ -38,16 +56,6 @@
                     </el-button>
                 </template>
             </el-table-column>
-<!--            <el-table-column label="操作">-->
-<!--                <template slot-scope="scope">-->
-<!--                    <el-button size="mini" type="danger" @click="updateStatus(scope.row, 0)"-->
-<!--                               v-if="scope.row.status === 1">禁用-->
-<!--                    </el-button>-->
-<!--                    <el-button size="mini" type="primary" @click="updateStatus(scope.row, 1) " v-else>启用-->
-<!--                    </el-button>-->
-<!--                </template>-->
-<!--            </el-table-column>-->
-
             <el-table-column label="操作">
                 <template slot-scope="scope">
                     <el-button size="mini" type="info" @click="onClick(scope.row)">编辑</el-button>
@@ -58,15 +66,23 @@
         <div style="margin-top: 10px;margin-left: 13px">
             <el-pagination ref="pagination"
                            layout="total, prev, pager, next"
-                           :current-page.sync="page"
-                           :total.sync="list.length">
+                           :current-page.sync="form.page"
+                           @current-change="fetchData"
+                           :total.sync="count">
             </el-pagination>
         </div>
 
-        <el-dialog title="要导入的学生名单" :visible.sync="dialogTableVisible">
+        <el-dialog title="要导入的用户名单" :visible.sync="dialogTableVisible">
             <el-table :data="excelTableData">
                 <el-table-column property="id" label="学号"/>
                 <el-table-column property="name" label="姓名"/>
+                <el-table-column label="角色">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.type === 0">学生</span>
+                        <span v-else-if="scope.row.type === 1">教师</span>
+                        <span v-else-if="scope.row.type === 2">管理员</span>
+                    </template>
+                </el-table-column>
                 <el-table-column property="department" label="学院"/>
                 <el-table-column property="major" label="专业"/>
                 <el-table-column property="specialty" label="班级"/>
@@ -95,6 +111,8 @@
     import {users, updateStatus, addUserList} from "@/api/user";
     import store from '@/store'
     import edit from './editUser.vue'
+    import {category} from '@/api/user'
+
 
     export default {
         name: "user",
@@ -102,15 +120,6 @@
             edit
         },
         computed: {
-            tableData() {
-                let offset = (this.page - 1) * 10;
-                let end = Math.min(this.list.length, offset + 10);
-                console.info("change " + offset + " " + end + " " + this.page);
-                if (offset === end) {
-                    console.info("bug");
-                }
-                return this.list.slice(offset, end);
-            },
             excelTableData() {
                 let offset = (this.excelPage - 1) * 8;
                 let end = Math.min(this.excelData.length, offset + 8);
@@ -131,14 +140,41 @@
                 editDialogFormVisible: false,
                 multipleSelection: [],
                 subject: {id: '', name: ''},
-                page: 1,
                 excelPage: 1,
                 list: [],
                 rawList: [],
-                rawCount: '',
                 excelData: [],
                 options: [],
-                user: {}
+                user: {},
+                form: {
+                    department: "",
+                    major: "",
+                    keyword: "",
+                    page: 1,
+                    limit: 10,
+                    type: "",
+                },
+                count: 0,
+                props: {
+                    lazy: true,
+                    lazyLoad(node, resolve) {
+                        console.info(node);
+                        let id = node.data ? node.data.id : 0;
+                        category(id).then(response => {
+                            let nodes = response.data.map(x => {
+                                return {
+                                    label: x.categoryName,
+                                    value: x.categoryName,
+                                    id: x.id,
+                                    leaf: x.floor === 2,
+                                }
+                            });
+                            resolve(nodes);
+                        }).catch(error => {
+                            this.$message.error(error);
+                        })
+                    }
+                }
             }
         },
         methods: {
@@ -146,9 +182,14 @@
                 this.fetchUserData();
             }, fetchUserData() {
                 this.loading = true;
-                users().then(response => {
+                let department = "", major = "";
+                if (this.form.major.length === 2) {
+                    department = this.form.major[0];
+                    major = this.form.major[1];
+                }
+                users(this.form.keyword, department, major, this.form.type, this.form.page, this.form.limit).then(response => {
                     this.loading = false;
-                    this.rawCount = response.count;
+                    this.count = response.count;
                     this.rawList = this.list = response.data.map((x) => {
                         return {
                             id: x.loginName,
@@ -190,7 +231,7 @@
             }, handleChange(file) {
                 this._file(file.raw);
             }, onConfirm() {
-                this.$confirm('确定要导入学生名单?', '提示', {
+                this.$confirm('确定要导入用户名单?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
@@ -239,12 +280,17 @@
                     const ws = wb.Sheets[wsname];
                     const data = XLSX.utils.sheet_to_json(ws, {header: 1});
                     this.excelData = data.map(function (x) {
-                        return {id: x[0], name: x[1], department: x[2], major: x[3], specialty: x[4]};
+                        return {id: x[0], name: x[1], type: x[2], department: x[3], major: x[4], specialty: x[5]};
                     });
+                    console.info(this.excelData);
                     this.dialogTableVisible = true;
                 };
                 reader.readAsBinaryString(file);
-            }
+            },
+            handleSearch() {
+                this.form.page = 1;
+                this.fetchData();
+            },
         }
     }
 </script>

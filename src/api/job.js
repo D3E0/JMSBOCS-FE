@@ -5,12 +5,14 @@ import store from '@/store'
  * 作业列表
  * @param page
  */
-export function jobList() {
+export function jobList(keyword, courseId, page, limit) {
+    limit = limit ? limit : 100;
+    page = page ? page : 1;
     return request({
         url: '/api/course/jobList',
         method: 'get',
         params: {
-            userId: store.getters.id
+            userId: store.getters.id, keyword, courseId, page, limit
         }
     })
 }
@@ -33,12 +35,12 @@ export function courseJobList(courseId) {
  *作业信息
  * @param jobId
  */
-export function jobInfo(jobId) {
+export function jobInfo(jobId, userId) {
     return request({
         url: '/api/course/job',
         method: 'get',
         params: {
-            jobId
+            jobId, userId
         }
     })
 }
@@ -171,6 +173,22 @@ export function fetchJobItem(id, jobId, type) {
         method: 'get',
         params: {
             id, jobId, type
+        }
+    })
+}
+
+/**
+ * 作业提交
+ */
+export function scoreList(keyword, page, limit) {
+    let userId = store.getters.id;
+    limit = limit ? limit : 100;
+    page = page ? page : 1;
+    return request({
+        url: '/api/course/job/score/list',
+        method: 'get',
+        params: {
+            userId, keyword, page, limit
         }
     })
 }

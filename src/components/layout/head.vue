@@ -10,13 +10,16 @@
         <el-menu-item index="jobList" :route="{path:'/jobList'}">
             <i class="fa fa-tasks fa-fw"/>&nbsp;作业
         </el-menu-item>
+        <el-menu-item index="scoreList" :route="{path:'/scoreList'}">
+            <i class="fa fa-tasks fa-fw"/>&nbsp;成绩
+        </el-menu-item>
 
         <el-submenu index="5" class="layout-right">
             <template slot="title">
                 <i class="fa fa-user fa-fw"/>{{name}}
             </template>
             <el-menu-item index="user" :route="{path:'/user'}">个人信息</el-menu-item>
-            <el-menu-item index="user" :route="{path:'/admin'}">系统管理</el-menu-item>
+            <el-menu-item index="user" :route="{path:'/admin'}" v-if="teacher">系统管理</el-menu-item>
             <el-menu-item index="logout" :route="{path:this.$route.path}">退出登录</el-menu-item>
         </el-submenu>
 
@@ -36,7 +39,8 @@
             return {
                 activeIndex: '1',
                 activeIndex2: '1',
-                name: store.getters.name
+                name: store.getters.name,
+                teacher: store.getters.isTeacher,
             };
         },
         methods: {

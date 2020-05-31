@@ -10,7 +10,7 @@
             </el-table-column>
             <el-table-column>
                 <template slot="header" slot-scope="scope">
-                    <el-button type="primary" size="medium" plain @click="onSubmit" v-if="isTch">
+                    <el-button type="primary" size="medium" plain @click="onSubmit" v-if="myCourse">
                         发布公告
                     </el-button>
                 </template>
@@ -27,7 +27,7 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column v-if="isTch">
+            <el-table-column v-if="myCourse">
                 <template slot-scope="scope">
                     <el-button size="mini" type="danger" style="float: right"
                                @click="onDelete(scope.$index, scope.row)">删除
@@ -60,6 +60,7 @@
 
 <script>
     import {courceAnnouncement, deleteCourceAnnouncement, addCourceAnnouncement} from '@/api/announcement'
+    import {courseInfo,} from "@/api/course";
     import store from "@/store"
 
     export default {
@@ -81,14 +82,14 @@
                 loading: false,
                 list: [],
                 cid: this.$route.params.cid,
-                isTch: store.getters.isTeacher,
                 selectedId: '',
                 selectedIndex: '',
                 page: 1,
                 form: {
                     title: '',
                     content: '',
-                }
+                },
+                myCourse: false,
             }
         }, created() {
             this.fetchData();
@@ -102,6 +103,11 @@
                     this.$message.error(error);
                 }).finally(() => {
                     this.loading = false;
+                });
+                courseInfo(this.$route.params.cid).then(response => {
+                    this.myCourse = parseInt(response.data.teacherId) === parseInt(store.getters.id);
+                }).catch(error => {
+                    this.$message.error(error);
                 });
             }, handleDelete() {
                 this.loading = true;

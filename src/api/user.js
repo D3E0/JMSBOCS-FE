@@ -76,12 +76,14 @@ export function addCategory(department, major, specialty) {
     })
 }
 
-export function users() {
+export function users(keyword, department, major, type, page, limit) {
+    limit = limit ? limit : 100;
+    page = page ? page : 1;
     return request({
         url: '/api/user/all',
         method: 'get',
         params: {
-            loginName: store.getters.id
+            keyword, department, major, type, page, limit,
         }
     })
 }

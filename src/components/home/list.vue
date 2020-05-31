@@ -1,5 +1,7 @@
 <template>
     <div>
+        <recommend/>
+
         <el-row>
             <el-col :span="24" class="panel-title">课程广场</el-col>
         </el-row>
@@ -58,9 +60,11 @@
     import {allCoursee,} from '@/api/course'
     import {category} from '@/api/user'
     import pic from '@/assets/class.png'
+    import Recommend from "@/components/home/recommend.vue";
 
     export default {
         name: "Home",
+        components: {Recommend},
         computed: {},
         data() {
             return {

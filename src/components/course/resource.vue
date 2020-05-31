@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div style="float: right" v-if="isTch">
+        <div style="float: right" v-if="myCourse">
             <el-upload ref="upload" :limit="1" action="/api/file/upload/v2"
                        :data="{path: this.savePath}"
                        name="submitFile"
@@ -43,7 +43,7 @@
                         <el-button size="small" type="primary"
                                    @click="handleDownload(scope.$index, scope.row)">下载
                         </el-button>
-                        <el-button size="small" type="danger" v-if="isTch"
+                        <el-button size="small" type="danger" v-if="myCourse"
                                    @click="onDelete(scope.$index, scope.row)">删除
                         </el-button>
                     </div>
@@ -64,6 +64,7 @@
     import {previewLink, downloadLink} from '@/api/file'
     import store from "@/store"
     import pic from '@/assets/file.png'
+    import {courseInfo,} from "@/api/course";
 
     export default {
         name: "CourseResource",
@@ -93,7 +94,6 @@
             return {
                 loading: false,
                 courseId: this.$route.params.cid,
-                isTch: store.getters.isTeacher,
                 search: "",
                 searchVal: "",
                 pic: pic,
@@ -101,7 +101,8 @@
                 selectedId: 0,
                 selectedIndex: 0,
                 page: 1,
-                token: getToken()
+                token: getToken(),
+                myCourse: false,
             }
         }, created() {
             this.fetchData();
@@ -114,6 +115,12 @@
                     this.$message.error(error);
                 }).finally(() => {
                     this.loading = false;
+                });
+
+                courseInfo(this.$route.params.cid).then(response => {
+                    this.myCourse = parseInt(response.data.teacherId) === parseInt(store.getters.id);
+                }).catch(error => {
+                    this.$message.error(error);
                 });
             },
             handleDownload(index, obj) {

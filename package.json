@@ -43,7 +43,7 @@
     "vue-cli-plugin-axios": "0.0.4",
     "vue-cli-plugin-element": "^1.0.0",
     "vue-template-compiler": "^2.5.17",
-    "xlsx": "^0.14.1"
+    "xlsx": "^0.17.0"
   },
   "eslintConfig": {
     "root": true,
